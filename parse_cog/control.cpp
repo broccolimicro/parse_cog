@@ -75,6 +75,16 @@ void control::parse(tokenizer &tokens, void *data)
 			tokens.increment(true);
 			tokens.expect<composition>();
 
+			tokens.increment(false);
+			tokens.expect<parse::new_line>();
+
+			while (tokens.decrement(__FILE__, __LINE__, data)) {
+				tokens.next();
+
+				tokens.increment(false);
+				tokens.expect<parse::new_line>();
+			}
+
 			if (tokens.decrement(__FILE__, __LINE__, data)) {
 				action.parse(tokens, data);
 			}
@@ -91,7 +101,6 @@ void control::parse(tokenizer &tokens, void *data)
 bool control::is_next(tokenizer &tokens, int i, void *data)
 {
 	return tokens.is_next("while", i)
-		or tokens.is_next("when", i)
 		or tokens.is_next("await", i)
 		or tokens.is_next("assume", i)
 		or tokens.is_next("region", i);
@@ -106,7 +115,7 @@ void control::register_syntax(tokenizer &tokens)
 		composition::register_syntax(tokens);
 		tokens.register_token<parse::number>();
 		tokens.register_token<parse::white_space>(false);
-		tokens.register_token<parse::new_line>(false);
+		tokens.register_token<parse::new_line>(true);
 	}
 }
 

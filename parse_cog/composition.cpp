@@ -45,19 +45,17 @@ void composition::parse(tokenizer &tokens, void *data)
 		}
 
 		tokens.increment(false);
-		if (level == SEQUENCE) {
-			tokens.expect(";");
+		tokens.expect<parse::new_line>();
+
+		while (tokens.decrement(__FILE__, __LINE__, data)) {
+			tokens.next();
+
+			tokens.increment(false);
 			tokens.expect<parse::new_line>();
-		} else if (level == PARALLEL) {
-			tokens.expect("and");
-		} else if (level == CONDITION) {
-			tokens.expect("or");
-		} else if (level == CHOICE) {
-			tokens.expect("xor");
 		}
 
-		tokens.increment(true);
-		if (level < 3) {
+		tokens.increment(level != SEQUENCE);
+		if (level < CHOICE) {
 			tokens.expect<composition>();
 		} else {
 			tokens.expect<control>();
@@ -84,6 +82,16 @@ void composition::parse(tokenizer &tokens, void *data)
 				tokens.increment(true);
 				tokens.expect<composition>();
 
+				tokens.increment(false);
+				tokens.expect<parse::new_line>();
+
+				while (tokens.decrement(__FILE__, __LINE__, data)) {
+					tokens.next();
+
+					tokens.increment(false);
+					tokens.expect<parse::new_line>();
+				}
+
 				if (tokens.decrement(__FILE__, __LINE__, data)) {
 					branches.push_back(branch(composition(tokens, 0, data)));
 				}
@@ -92,6 +100,21 @@ void composition::parse(tokenizer &tokens, void *data)
 					tokens.next();
 				}
 			}
+
+			tokens.increment(false);
+			if (level == SEQUENCE) {
+				tokens.expect<parse::new_line>();
+			} else if (level == INTERNAL_SEQUENCE) {
+				tokens.expect(";");
+			} else if (level == PARALLEL) {
+				tokens.expect("and");
+			} else if (level == CONDITION) {
+				tokens.expect("or");
+			} else if (level == CHOICE) {
+				tokens.expect("xor");
+			}
+		} else {
+			break;
 		}
 	} while (tokens.decrement(__FILE__, __LINE__, data));
 
@@ -113,7 +136,7 @@ void composition::register_syntax(tokenizer &tokens)
 		tokens.register_syntax<composition>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::white_space>(false);
-		tokens.register_token<parse::new_line>(false);
+		tokens.register_token<parse::new_line>(true);
 		control::register_syntax(tokens);
 		assignment::register_syntax(tokens);
 	}
@@ -139,13 +162,15 @@ string composition::to_string(int prev_level, string tab) const
 	for (auto branch = branches.begin(); branch != branches.end(); branch++) {
 		if (branch != branches.begin()) {
 			if (level == SEQUENCE) {
-				result += ";\n";
+				result += "\n";
 			} else if (level == CONDITION) {
 				result += " or ";
 			} else if (level == CHOICE) {
 				result += " xor ";
 			} else if (level == PARALLEL) {
 				result += " and ";
+			} else if (level == INTERNAL_SEQUENCE) {
+				result += "; ";
 			}
 		}
 

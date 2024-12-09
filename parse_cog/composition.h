@@ -16,9 +16,10 @@ struct composition : parse::syntax
 
 	enum {
 		SEQUENCE = 0,
-		PARALLEL = 1,
-		CONDITION = 2, // deterministic
-		CHOICE = 3 // non-deterministic
+		INTERNAL_SEQUENCE = 1,
+		PARALLEL = 2,
+		CONDITION = 3, // deterministic
+		CHOICE = 4 // non-deterministic
 	};
 
 	vector<parse_cog::branch> branches;
