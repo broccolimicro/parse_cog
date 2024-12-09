@@ -14,6 +14,13 @@ struct composition : parse::syntax
 	composition(tokenizer &tokens, int level = 0, void *data = NULL);
 	~composition();
 
+	enum {
+		SEQUENCE = 0,
+		PARALLEL = 1,
+		CONDITION = 2, // deterministic
+		CHOICE = 3 // non-deterministic
+	};
+
 	vector<parse_cog::branch> branches;
 	int level;
 

@@ -30,7 +30,6 @@ void control::parse(tokenizer &tokens, void *data)
 
 	tokens.increment(true);
 	tokens.expect("while");
-	tokens.expect("when");
 	tokens.expect("await");
 	tokens.expect("assume");
 	tokens.expect("region");
@@ -40,15 +39,11 @@ void control::parse(tokenizer &tokens, void *data)
 	}
 
 	if (kind == "while"
-		or kind == "when"
 		or kind == "region") {
 		tokens.increment(true);
-		tokens.expect("}");
-
-		tokens.increment(true);
-		tokens.expect<composition>();
-
-		tokens.increment(true);
+		tokens.expect("{");
+	} if (kind == "await") {
+		tokens.increment(false);
 		tokens.expect("{");
 	}
 
@@ -69,18 +64,24 @@ void control::parse(tokenizer &tokens, void *data)
 	}
 
 	if (kind == "while"
-		or kind == "when"
+		or kind == "await"
 		or kind == "region") {
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
 			tokens.next();
-		}
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			action.parse(tokens, data);
-		}
+			tokens.increment(true);
+			tokens.expect("}");
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			tokens.next();
+			tokens.increment(true);
+			tokens.expect<composition>();
+
+			if (tokens.decrement(__FILE__, __LINE__, data)) {
+				action.parse(tokens, data);
+			}
+
+			if (tokens.decrement(__FILE__, __LINE__, data)) {
+				tokens.next();
+			}
 		}
 	}
 
@@ -112,9 +113,9 @@ void control::register_syntax(tokenizer &tokens)
 string control::to_string(string tab) const
 {
 	if (!valid)
-		return "skip";
+		return tab+"skip";
 
-	string result = kind;
+	string result = tab+kind;
 	if (guard.valid) {
 		result += " " + guard.to_string(tab);
 	} else if (region != "") {
@@ -122,7 +123,7 @@ string control::to_string(string tab) const
 	}
 
 	if (action.valid) {
-		result += " {\n" + action.to_string(tab+"\t") + "\n}";
+		result += " {\n" + action.to_string(tab+"\t") + "\n" + tab + "}";
 	}
 
 	return result;

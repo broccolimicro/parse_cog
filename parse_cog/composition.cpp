@@ -37,19 +37,23 @@ void composition::parse(tokenizer &tokens, void *data)
 		if (first) {
 			first = false;
 		} else {
+			/*if (tokens.found<parse::new_line>() and not control::is_next(tokens, 1) and not assignment::is_next(tokens, 1) and not tokens.is_next("{") and not tokens.is_next("skip")) {
+				tokens.next();
+				break;
+			}*/
 			tokens.next();
 		}
 
 		tokens.increment(false);
-		if (level == 0) {
+		if (level == SEQUENCE) {
 			tokens.expect(";");
 			tokens.expect<parse::new_line>();
-		} else if (level == 1) {
-			tokens.expect("or");
-		} else if (level == 2) {
-			tokens.expect("xor");
-		} else if (level == 3) {
+		} else if (level == PARALLEL) {
 			tokens.expect("and");
+		} else if (level == CONDITION) {
+			tokens.expect("or");
+		} else if (level == CHOICE) {
+			tokens.expect("xor");
 		}
 
 		tokens.increment(true);
@@ -109,7 +113,7 @@ void composition::register_syntax(tokenizer &tokens)
 		tokens.register_syntax<composition>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::white_space>(false);
-		tokens.register_token<parse::new_line>(true);
+		tokens.register_token<parse::new_line>(false);
 		control::register_syntax(tokens);
 		assignment::register_syntax(tokens);
 	}
@@ -123,30 +127,33 @@ string composition::to_string(string tab) const
 string composition::to_string(int prev_level, string tab) const
 {
 	if (!valid || branches.empty())
-		return "skip";
+		return tab+"skip";
 
 	string result = "";
-	if (prev_level > level)
-		result += "{";
+	string subtab = tab;
+	if (prev_level > level) {
+		result += tab + "{\n";
+		subtab += "\t";
+	}
 
 	for (auto branch = branches.begin(); branch != branches.end(); branch++) {
 		if (branch != branches.begin()) {
-			if (level == 0) {
-				result += "\n";
-			} else if (level == 1) {
-				result += "or";
-			} else if (level == 2) {
-				result += "xor";
-			} else if (level == 3) {
-				result += "and";
+			if (level == SEQUENCE) {
+				result += ";\n";
+			} else if (level == CONDITION) {
+				result += " or ";
+			} else if (level == CHOICE) {
+				result += " xor ";
+			} else if (level == PARALLEL) {
+				result += " and ";
 			}
 		}
 
-		result += branch->to_string(level, tab);
+		result += branch->to_string(level, subtab);
 	}
 
 	if (prev_level > level)
-		result += "}";
+		result += "\n" + tab + "}";
 
 	return result;
 }
