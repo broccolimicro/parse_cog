@@ -3,16 +3,11 @@
 #include "composition.h"
 #include "control.h"
 
-namespace parse_cog
-{
-	parse::syntax *produce(tokenizer &tokens, void *data)
-	{
-		return new composition(tokens, data);
-	};
+namespace parse_cog {
 
-	string factory_type()
-	{
-		return "[" + composition().debug_name + "]";
-	}
+parse::syntax *produce(tokenizer &tokens, void *data=nullptr);
+void expect(tokenizer &tokens);
+void register_syntax(tokenizer &tokens);
+
 }
 

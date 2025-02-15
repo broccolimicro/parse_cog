@@ -37,9 +37,9 @@ string branch::to_string(int level, string tab) const
 	} else if (ctrl and ctrl->valid) {
 		return ctrl->to_string(tab);
 	} else if (assign.valid) {
-		return assign.to_string(tab);
+		return tab + assign.to_string(tab);
 	}
-	return "skip";
+	return tab + "skip";
 }
 
 }

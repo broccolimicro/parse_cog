@@ -123,6 +123,10 @@ void composition::parse(tokenizer &tokens, void *data)
 
 bool composition::is_next(tokenizer &tokens, int i, void *data)
 {
+	while (tokens.is_next<parse::new_line>(i)) {
+		i++;
+	}
+
 	return tokens.is_next("skip")
 		or tokens.is_next("{", i)
 		or control::is_next(tokens, i, data)
