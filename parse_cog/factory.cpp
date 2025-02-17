@@ -2,8 +2,7 @@
 
 namespace parse_cog {
 
-parse::syntax *produce(tokenizer &tokens, void *data)
-{
+parse::syntax *produce(tokenizer &tokens, void *data) {
 	return new composition(tokens, 0, data);
 }
 
