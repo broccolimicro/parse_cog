@@ -1,7 +1,7 @@
 #pragma once
 
-#include "composition.h"
-#include "control.h"
+#include <parse/parse.h>
+#include <parse/syntax.h>
 
 namespace parse_cog {
 

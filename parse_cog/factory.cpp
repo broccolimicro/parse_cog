@@ -1,5 +1,7 @@
 #include "factory.h"
 
+#include "composition.h"
+
 namespace parse_cog {
 
 parse::syntax *produce(tokenizer &tokens, void *data) {
