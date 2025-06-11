@@ -20,7 +20,7 @@ branch::branch(assignment assign) {
 	this->assign = assign;
 }
 
-branch::branch(parse_ucs::declaration decl) {
+branch::branch(parse_ucs::inline_declaration decl) {
 	this->decl = decl;
 }
 

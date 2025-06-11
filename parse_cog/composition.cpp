@@ -60,7 +60,7 @@ void composition::parse(tokenizer &tokens, void *data)
 		} else {
 			tokens.expect<control>();
 			tokens.expect<assignment>();
-			tokens.expect<parse_ucs::declaration>();
+			tokens.expect<parse_ucs::inline_declaration>();
 			tokens.expect("{");
 			tokens.expect("skip");
 		}
@@ -72,8 +72,8 @@ void composition::parse(tokenizer &tokens, void *data)
 				branches.push_back(branch(control(tokens, data)));
 			} else if (tokens.found<assignment>()) {
 				branches.push_back(branch(assignment(tokens, data)));
-			} else if (tokens.found<parse_ucs::declaration>()) {
-				branches.push_back(branch(parse_ucs::declaration(tokens, data)));
+			} else if (tokens.found<parse_ucs::inline_declaration>()) {
+				branches.push_back(branch(parse_ucs::inline_declaration(tokens, data)));
 			} else if (tokens.found("skip")) {
 				tokens.next();
 			} else if (tokens.found("{")) {
@@ -134,7 +134,7 @@ bool composition::is_next(tokenizer &tokens, int i, void *data)
 		or tokens.is_next("{", i)
 		or control::is_next(tokens, i, data)
 		or assignment::is_next(tokens, i, data)
-		or parse_ucs::declaration::is_next(tokens, i, data);
+		or parse_ucs::inline_declaration::is_next(tokens, i, data);
 }
 
 void composition::register_syntax(tokenizer &tokens)
@@ -147,7 +147,7 @@ void composition::register_syntax(tokenizer &tokens)
 		tokens.register_token<parse::new_line>(true);
 		control::register_syntax(tokens);
 		assignment::register_syntax(tokens);
-		parse_ucs::declaration::register_syntax(tokens);
+		parse_ucs::inline_declaration::register_syntax(tokens);
 	}
 }
 

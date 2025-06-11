@@ -19,13 +19,13 @@ struct branch {
 	branch(composition sub);
 	branch(control ctrl);
 	branch(assignment assign);
-	branch(parse_ucs::declaration decl);
+	branch(parse_ucs::inline_declaration decl);
 	~branch();
 
 	std::shared_ptr<composition> sub;
 	std::shared_ptr<control> ctrl;
 	assignment assign;
-	parse_ucs::declaration decl;
+	parse_ucs::inline_declaration decl;
 
 	string to_string(int level, string tab) const;
 };
