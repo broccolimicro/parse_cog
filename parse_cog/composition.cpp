@@ -137,10 +137,10 @@ bool composition::is_next(tokenizer &tokens, int i, void *data)
 		or parse_ucs::inline_declaration::is_next(tokens, i, data);
 }
 
-void composition::register_syntax(tokenizer &tokens)
-{
-	if (!tokens.syntax_registered<composition>())
-	{
+void composition::register_syntax(tokenizer &tokens) {
+	if (!tokens.syntax_registered<composition>()) {
+		// TODO(edward.bingham) Set up parse_expression here
+
 		tokens.register_syntax<composition>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::white_space>(false);
