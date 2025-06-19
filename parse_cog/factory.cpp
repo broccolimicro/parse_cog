@@ -79,6 +79,7 @@ void setup_expressions() {
 	result.push(parse_expression::operation_set::MODIFIER);
 	result.push_back("", "::", "", "");
 	parse_expression::expression::register_precedence(result);
+	parse_expression::assignment::lvalueLevel = 13;
 }
 
 void register_syntax(tokenizer &tokens) {
