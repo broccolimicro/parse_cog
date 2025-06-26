@@ -30,7 +30,7 @@ endif
 
 TEST_INCLUDE_PATHS = -I$(GTEST)/googletest/include $(TEST_DEPEND:%=-I../%) -I.
 TEST_LIBRARY_PATHS = -L$(GTEST)/build/lib $(TEST_DEPEND:%=-L../%) -L.
-TEST_LIBRARIES = -l$(NAME) $(TEST_DEPEND:%=-l%) -pthread -lgtest
+TEST_LIBRARIES = -l$(NAME) $(TEST_DEPEND:%=-l%) -pthread -lgtest -lcgraph -lgvc
 TEST_LIBRARY_OBJECTS = $(foreach dep,$(TEST_DEPEND),../$(dep)/lib$(dep).a)
 
 TESTS        := $(shell mkdir -p $(TESTDIR); find $(TESTDIR) -name '*.cpp')
@@ -56,7 +56,9 @@ else
         CXXFLAGS += -D LINUX
     endif
     ifeq ($(UNAME_S),Darwin)
-        CXXFLAGS += -D OSX -mmacos-version-min=15.0
+        CXXFLAGS += -D OSX -mmacos-version-min=15.0 -D GRAPHVIZ_SUPPORTED
+        TEST_INCLUDE_PATHS += -I$(shell brew --prefix graphviz)/include
+        TEST_LIBRARY_PATHS += -L$(shell brew --prefix graphviz)/lib
     endif
     UNAME_P := $(shell uname -p)
     ifeq ($(UNAME_P),x86_64)
