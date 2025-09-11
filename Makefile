@@ -1,7 +1,6 @@
 NAME          = parse_cog
 DEPEND        = parse_expression parse_ucs parse common
-TEST_DEPEND   = parse_expression parse_ucs parse common
-
+TEST_DEPEND   = parse_expression parse_ucs parse_chp parse_dot parse_verilog parse common interpret_flow flow interpret_chp chp interpret_chp interpret_arithmetic arithmetic petri 
 COVERAGE ?= 0
 
 ifeq ($(COVERAGE),0)
