@@ -31,6 +31,7 @@ void control::parse(tokenizer &tokens, void *data)
 	tokens.increment(true);
 	tokens.expect("while");
 	tokens.expect("await");
+	tokens.expect("if");
 	tokens.expect("assume");
 	tokens.expect("region");
 
@@ -43,6 +44,9 @@ void control::parse(tokenizer &tokens, void *data)
 		tokens.increment(true);
 		tokens.expect("{");
 	} if (kind == "await") {
+		tokens.increment(false);
+		tokens.expect("{");
+	} if (kind == "if") {
 		tokens.increment(false);
 		tokens.expect("{");
 	}
@@ -65,6 +69,7 @@ void control::parse(tokenizer &tokens, void *data)
 
 	if (kind == "while"
 		or kind == "await"
+		or kind == "if"
 		or kind == "region") {
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
 			tokens.next();
@@ -102,6 +107,7 @@ bool control::is_next(tokenizer &tokens, int i, void *data)
 {
 	return tokens.is_next("while", i)
 		or tokens.is_next("await", i)
+		or tokens.is_next("if", i)
 		or tokens.is_next("assume", i)
 		or tokens.is_next("region", i);
 }
