@@ -31,14 +31,6 @@ void setup_expressions() {
 	result.push_back("", "", "^", "");
 
 	result.push(parse_expression::operation_set::BINARY);
-	result.push_back("", "", "==", "");
-	result.push_back("", "", "~=", "");
-	result.push_back("", "", "<", "");
-	result.push_back("", "", ">", "");
-	result.push_back("", "", "<=", "");
-	result.push_back("", "", ">=", "");
-
-	result.push(parse_expression::operation_set::BINARY);
 	result.push_back("", "", "||", "");
 	
 	result.push(parse_expression::operation_set::BINARY);
@@ -46,6 +38,14 @@ void setup_expressions() {
 
 	result.push(parse_expression::operation_set::BINARY);
 	result.push_back("", "", "^^", "");
+
+	result.push(parse_expression::operation_set::BINARY);
+	result.push_back("", "", "==", "");
+	result.push_back("", "", "~=", "");
+	result.push_back("", "", "<", "");
+	result.push_back("", "", ">", "");
+	result.push_back("", "", "<=", "");
+	result.push_back("", "", ">=", "");
 
 	result.push(parse_expression::operation_set::BINARY);
 	result.push_back("", "", "<<", "");
@@ -63,7 +63,6 @@ void setup_expressions() {
 	result.push(parse_expression::operation_set::UNARY);
 	result.push_back("!", "", "", "");
 	result.push_back("~", "", "", "");
-	result.push_back("(bool)", "", "", "");
 	result.push_back("+", "", "", "");
 	result.push_back("-", "", "", "");
 	result.push_back("?", "", "", "");
@@ -72,6 +71,7 @@ void setup_expressions() {
 	result.push_back("", "'", "", "");
 
 	result.push(parse_expression::operation_set::MODIFIER);
+	result.push_back("", "{", ",", "}");
 	result.push_back("", "(", ",", ")");
 	result.push_back("", ".", "", "");
 	result.push_back("", "[", ":", "]");
