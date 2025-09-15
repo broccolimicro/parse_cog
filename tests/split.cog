@@ -1,9 +1,9 @@
 while {
-	c = C.recv()
+	c = Cc.recv()
 	l = L.recv()
 	await c == 0 {
-		L0.send(l)
+		R0.send(l)
 	} or await c == 1 {
-		L1.recv(l)
+		R1.send(l)
 	}
 }

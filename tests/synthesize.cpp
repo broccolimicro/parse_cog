@@ -8,26 +8,24 @@
 
 #include <gtest/gtest.h>
 
+#include <chp/graph.h>
+#include <chp/synthesize.h>
 #include <common/standard.h>
+#include <flow/func.h>
+#include <flow/module.h>
+#include <flow/synthesize.h>
+#include <interpret_chp/import_chp.h>
+#include <interpret_chp/import_cog.h>
+#include <interpret_chp/export_dot.h>
+#include <interpret_flow/export_dot.h>
+#include <interpret_flow/export_verilog.h>
 #include <parse/tokenizer.h>
 #include <parse/default/block_comment.h>
 #include <parse/default/line_comment.h>
-
 #include <parse_cog/composition.h>
 #include <parse_cog/branch.h>
 #include <parse_cog/control.h>
 #include <parse_cog/factory.h>
-
-#include <chp/graph.h>
-#include <chp/synthesize.h>
-#include <interpret_chp/import_chp.h>
-#include <interpret_chp/import_cog.h>
-#include <interpret_chp/export_dot.h>
-
-#include <flow/func.h>
-#include <flow/module.h>
-#include <flow/synthesize.h>
-#include <interpret_flow/export_verilog.h>
 
 #include "dot.h"
 
@@ -121,10 +119,32 @@ void testFuncSynthesisFromCog(flow::Func &expected, bool render=true) {
 
 	g.flatten();
 	if (render) {
-		string graphvizRaw = chp::export_graph(g, true).to_string();
-		gvdot::render(filenameWithoutExtension + ".png", graphvizRaw);
+		string chpGraphvizRaw = chp::export_graph(g, true).to_string();
+		gvdot::render(filenameWithoutExtension + ".png", chpGraphvizRaw);
 	}
+
 	flow::Func real = chp::synthesizeFuncFromCHP(g);
+	if (render) {
+		string rflow_filename = filenameWithoutExtension + "_flow_real.dot";
+		string rflowGraphvizRaw = flow::export_func(real, true).to_string();
+		std::ofstream rflow_file(rflow_filename);
+		if (!rflow_file) {
+				std::cerr << "ERROR: Failed to open file for <test>_flow_real.dot export: "
+					<< rflow_filename << std::endl
+					<< "ERROR: Try again from dir: <project_dir>/lib/parse_cog" << std::endl;
+		}
+		rflow_file << rflowGraphvizRaw;
+
+		string eflow_filename = filenameWithoutExtension + "_flow_expected.dot";
+		string eflowGraphvizRaw = flow::export_func(expected, true).to_string();
+		std::ofstream eflow_file(eflow_filename);
+		if (!eflow_file) {
+				std::cerr << "ERROR: Failed to open file for <test>_flow_expected.dot export: "
+					<< eflow_filename << std::endl
+					<< "ERROR: Try again from dir: <project_dir>/lib/parse_cog" << std::endl;
+		}
+		eflow_file << eflowGraphvizRaw;
+	}
 
 	EXPECT_EQ(real.name, expected.name);
 	EXPECT_TRUE(areEquivalent(real, expected));
