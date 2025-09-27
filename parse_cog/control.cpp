@@ -10,12 +10,12 @@ namespace parse_cog
 
 control::control()
 {
-	debug_name = "control";
+	debug_name = "cog_control";
 }
 
 control::control(tokenizer &tokens, void *data)
 {
-	debug_name = "control";
+	debug_name = "cog_control";
 	parse(tokens, data);
 }
 
@@ -103,8 +103,7 @@ void control::parse(tokenizer &tokens, void *data)
 	tokens.syntax_end(this);
 }
 
-bool control::is_next(tokenizer &tokens, int i, void *data)
-{
+bool control::is_next(tokenizer &tokens, int i, void *data) {
 	return tokens.is_next("while", i)
 		or tokens.is_next("await", i)
 		or tokens.is_next("if", i)
@@ -112,10 +111,9 @@ bool control::is_next(tokenizer &tokens, int i, void *data)
 		or tokens.is_next("region", i);
 }
 
-void control::register_syntax(tokenizer &tokens)
-{
-	if (!tokens.syntax_registered<control>())
-	{
+void control::register_syntax(tokenizer &tokens) {
+	if (!tokens.syntax_registered<control>()) {
+		setup_expressions();
 		tokens.register_syntax<control>();
 		expression::register_syntax(tokens);
 		composition::register_syntax(tokens);
@@ -125,8 +123,7 @@ void control::register_syntax(tokenizer &tokens)
 	}
 }
 
-string control::to_string(string tab) const
-{
+string control::to_string(string tab) const {
 	if (!valid)
 		return tab+"skip";
 
@@ -144,8 +141,8 @@ string control::to_string(string tab) const
 	return result;
 }
 
-parse::syntax *control::clone() const
-{
+parse::syntax *control::clone() const {
 	return new control(*this);
 }
+
 }

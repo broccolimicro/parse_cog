@@ -13,13 +13,13 @@ namespace parse_cog
 
 composition::composition()
 {
-	debug_name = "composition";
+	debug_name = "cog_composition";
 	level = 0;
 }
 
 composition::composition(tokenizer &tokens, int level, void *data)
 {
-	debug_name = "composition";
+	debug_name = "cog_composition";
 	this->level = level;
 	parse(tokens, data);
 }
@@ -145,8 +145,7 @@ bool composition::is_next(tokenizer &tokens, int i, void *data) {
 
 void composition::register_syntax(tokenizer &tokens) {
 	if (!tokens.syntax_registered<composition>()) {
-		// TODO(edward.bingham) Set up parse_expression here
-
+		setup_expressions();
 		tokens.register_syntax<composition>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::white_space>(false);

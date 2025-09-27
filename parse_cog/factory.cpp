@@ -1,6 +1,5 @@
 #include "factory.h"
 
-#include "expression.h"
 #include "composition.h"
 
 namespace parse_cog {
@@ -14,7 +13,6 @@ void expect(tokenizer &tokens) {
 }
 
 void register_syntax(tokenizer &tokens) {
-	setup_expressions();
 	composition::register_syntax(tokens);
 }
 
