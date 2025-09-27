@@ -20,7 +20,7 @@ branch::branch(assignment assign) {
 	this->assign = assign;
 }
 
-branch::branch(parse_ucs::inline_declaration decl) {
+branch::branch(branch::declaration decl) {
 	this->decl = decl;
 }
 
@@ -35,7 +35,7 @@ string branch::to_string(int level, string tab) const {
 	} else if (assign.valid) {
 		return tab + assign.to_string(tab);
 	} else if (decl.valid) {
-		return tab + decl.to_string(tab);
+		return tab + "var " + decl.to_string(tab);
 	}
 	return tab + "skip";
 }

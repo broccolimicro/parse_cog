@@ -4,12 +4,13 @@
 #include <parse/syntax.h>
 
 #include "branch.h"
+#include "expression.h"
 
-namespace parse_cog
-{
+namespace parse_cog {
 
-struct composition : parse::syntax
-{
+struct composition : parse::syntax {
+	using declaration=parse_ucs::declaration_t<expression>;
+
 	composition();
 	composition(tokenizer &tokens, int level = 0, void *data = NULL);
 	~composition();

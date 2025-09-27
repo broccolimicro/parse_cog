@@ -2,16 +2,13 @@
 
 #include <parse/parse.h>
 #include <parse/syntax.h>
-#include <parse_expression/expression.h>
+#include "expression.h"
 
 #include "composition.h"
 
-namespace parse_cog
-{
-using parse_expression::expression;
+namespace parse_cog {
 
-struct control : parse::syntax
-{
+struct control : parse::syntax {
 	control();
 	control(tokenizer &tokens, void *data = NULL);
 	~control();
