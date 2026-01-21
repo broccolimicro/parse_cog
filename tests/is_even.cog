@@ -1,3 +1,0 @@
-while {
-	R.send(L.recv() % 2 == 0)
-}

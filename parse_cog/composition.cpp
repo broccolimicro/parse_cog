@@ -37,7 +37,7 @@ void composition::parse(tokenizer &tokens, void *data) {
 				tokens.next();
 				break;
 			}*/
-			tokens.next();
+			comp.push_back(tokens.next());
 		}
 
 		tokens.increment(false);
@@ -109,6 +109,7 @@ void composition::parse(tokenizer &tokens, void *data) {
 				tokens.expect("and");
 			} else if (level == CONDITION) {
 				tokens.expect("or");
+				tokens.expect("else");
 			} else if (level == CHOICE) {
 				tokens.expect("xor");
 			}
@@ -127,7 +128,7 @@ bool composition::is_next(tokenizer &tokens, int i, void *data) {
 
 	return tokens.is_next("skip", i)
 		or tokens.is_next("{", i)
-		or tokens.is_next("var", i)
+		or declaration::is_next(tokens, i, data)
 		or control::is_next(tokens, i, data)
 		or assignment::is_next(tokens, i, data);
 }
@@ -150,19 +151,11 @@ string composition::to_string(string tab) const {
 		return tab+"skip";
 
 	string result = "";
+	size_t j = 0;
 	for (auto i = branches.begin(); i != branches.end(); i++) {
 		if (i != branches.begin()) {
-			if (level == SEQUENCE) {
-				result += "\n";
-			} else if (level == CONDITION) {
-				result += " or ";
-			} else if (level == CHOICE) {
-				result += " xor ";
-			} else if (level == PARALLEL) {
-				result += " and ";
-			} else if (level == INTERNAL_SEQUENCE) {
-				result += "; ";
-			}
+			result += comp[j];
+			++j;
 		}
 
 		if ((*i)->is_a<composition>() and (*i)->get<composition>().level < level) {

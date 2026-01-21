@@ -23,6 +23,7 @@ struct composition : parse::syntax {
 	};
 
 	vector<std::shared_ptr<syntax> > branches;
+	vector<string> comp;
 	int level;
 
 	void parse(tokenizer &tokens, void *data = NULL);
