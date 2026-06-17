@@ -1,6 +1,6 @@
 NAME          = parse_cog
 DEPEND        = parse_expression parse_ucs parse common
-TEST_DEPEND   = parse_expression parse_ucs parse_chp parse_dot parse_verilog parse common interpret_flow flow interpret_chp chp interpret_arithmetic arithmetic petri 
+TEST_DEPEND   = parse_expression parse_ucs parse_chp parse_dot parse_verilog parse common interpret_flow flow interpret_chp chp interpret_arithmetic arithmetic petri
 COVERAGE ?= 0
 
 ifeq ($(COVERAGE),0)
@@ -8,7 +8,7 @@ CXXFLAGS = -std=c++20 -g -Wall -fmessage-length=0 -O2
 LDFLAGS  =
 else
 CXXFLAGS = -std=c++20 -g -Wall -fmessage-length=0 -O0 --coverage -fprofile-arcs -ftest-coverage
-LDFLAGS  = --coverage -fprofile-arcs -ftest-coverage 
+LDFLAGS  = --coverage -fprofile-arcs -ftest-coverage
 endif
 
 SRCDIR        = $(NAME)
@@ -88,9 +88,9 @@ coverage: clean
 $(TARGET): $(OBJECTS)
 	ar rvs $(TARGET) $(OBJECTS)
 
-build/$(SRCDIR)/%.o: $(SRCDIR)/%.cpp 
+build/$(SRCDIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(dir $@)
-	@$(CXX) $(CXXFLAGS) $(LDFLAGS) $(INCLUDE_PATHS) -MM -MF $(patsubst %.o,%.d,$@) -MT $@ -c $<
+	@$(CXX) $(CXXFLAGS) $(LDFLAGS) $(INCLUDE_PATHS) -MM -MF $(patsubst %.o,%.d,$@) -MT $@ $<
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(INCLUDE_PATHS) -c -o $@ $<
 
 $(TEST_TARGET): $(TEST_OBJECTS) $(OBJECTS) $(TARGET) $(TEST_LIBRARY_OBJECTS)
@@ -98,7 +98,7 @@ $(TEST_TARGET): $(TEST_OBJECTS) $(OBJECTS) $(TARGET) $(TEST_LIBRARY_OBJECTS)
 
 build/$(TESTDIR)/%.o: $(TESTDIR)/%.cpp
 	@mkdir -p $(dir $@)
-	@$(CXX) $(CXXFLAGS) $(TEST_INCLUDE_PATHS) -MM -MF $(patsubst %.o,%.d,$@) -MT $@ -c $<
+	@$(CXX) $(CXXFLAGS) $(TEST_INCLUDE_PATHS) -MM -MF $(patsubst %.o,%.d,$@) -MT $@ $<
 	$(CXX) $(CXXFLAGS) $(TEST_INCLUDE_PATHS) $< -c -o $@
 
 build/$(TESTDIR)/gtest_main.o: $(GTEST)/googletest/src/gtest_main.cc
