@@ -55,7 +55,7 @@ else
         CXXFLAGS += -D LINUX
     endif
     ifeq ($(UNAME_S),Darwin)
-        CXXFLAGS += -D OSX -mmacos-version-min=15.0 -D GRAPHVIZ_SUPPORTED
+        CXXFLAGS += -D OSX -mmacos-version-min=26.0 -D GRAPHVIZ_SUPPORTED
         TEST_INCLUDE_PATHS += -I$(shell brew --prefix graphviz)/include
         TEST_LIBRARY_PATHS += -L$(shell brew --prefix graphviz)/lib
     endif
