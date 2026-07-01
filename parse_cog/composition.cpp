@@ -5,31 +5,27 @@
 #include <parse/default/white_space.h>
 #include <parse/default/new_line.h>
 
-#include "branch.h"
 #include "control.h"
+#include "expression.h"
+#include "declaration.h"
 
-namespace parse_cog
-{
+namespace parse_cog {
 
-composition::composition()
-{
+composition::composition() {
 	debug_name = "cog_composition";
 	level = 0;
 }
 
-composition::composition(tokenizer &tokens, int level, void *data)
-{
+composition::composition(tokenizer &tokens, int level, void *data) {
 	debug_name = "cog_composition";
 	this->level = level;
 	parse(tokens, data);
 }
 
-composition::~composition()
-{
+composition::~composition() {
 }
 
-void composition::parse(tokenizer &tokens, void *data)
-{
+void composition::parse(tokenizer &tokens, void *data) {
 	tokens.syntax_start(this);
 
 	bool first = true;
@@ -60,27 +56,20 @@ void composition::parse(tokenizer &tokens, void *data)
 		} else {
 			tokens.expect<control>();
 			tokens.expect<assignment>();
-			tokens.expect("var");
+			tokens.expect<declaration>();
 			tokens.expect("{");
 			tokens.expect("skip");
 		}
 
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
 			if (tokens.found<composition>()) {
-				branches.push_back(branch(composition(tokens, level+1, data)));
+				branches.push_back(std::make_shared<composition>(tokens, level+1, data));
 			} else if (tokens.found<control>()) {
-				branches.push_back(branch(control(tokens, data)));
+				branches.push_back(std::make_shared<control>(tokens, data));
 			} else if (tokens.found<assignment>()) {
-				branches.push_back(branch(assignment(tokens, data)));
-			} else if (tokens.found("var")) {
-				tokens.next();
-
-				tokens.increment(true);
-				tokens.expect<declaration>();
-
-				if (tokens.decrement(__FILE__, __LINE__, data)) {
-					branches.push_back(branch(declaration(tokens, data)));
-				}
+				branches.push_back(std::make_shared<assignment>(tokens, data));
+			} else if (tokens.found<declaration>()) {
+				branches.push_back(std::make_shared<declaration>(tokens, data));
 			} else if (tokens.found("skip")) {
 				tokens.next();
 			} else if (tokens.found("{")) {
@@ -103,7 +92,7 @@ void composition::parse(tokenizer &tokens, void *data)
 				}
 
 				if (tokens.decrement(__FILE__, __LINE__, data)) {
-					branches.push_back(branch(composition(tokens, 0, data)));
+					branches.push_back(std::make_shared<composition>(tokens, 0, data));
 				}
 
 				if (tokens.decrement(__FILE__, __LINE__, data)) {
@@ -156,25 +145,13 @@ void composition::register_syntax(tokenizer &tokens) {
 	}
 }
 
-string composition::to_string(string tab) const
-{
-	return to_string(-1, tab);
-}
-
-string composition::to_string(int prev_level, string tab) const
-{
+string composition::to_string(string tab) const {
 	if (!valid || branches.empty())
 		return tab+"skip";
 
 	string result = "";
-	string subtab = tab;
-	if (prev_level > level) {
-		result += tab + "{\n";
-		subtab += "\t";
-	}
-
-	for (auto branch = branches.begin(); branch != branches.end(); branch++) {
-		if (branch != branches.begin()) {
+	for (auto i = branches.begin(); i != branches.end(); i++) {
+		if (i != branches.begin()) {
 			if (level == SEQUENCE) {
 				result += "\n";
 			} else if (level == CONDITION) {
@@ -188,18 +165,23 @@ string composition::to_string(int prev_level, string tab) const
 			}
 		}
 
-		result += branch->to_string(level, subtab);
+		if ((*i)->is_a<composition>() and (*i)->get<composition>().level < level) {
+			result += tab + "{\n" + (*i)->to_string(tab+"\t") + "\n" + tab + "}";
+		} else {
+			result += (*i)->to_string(tab);
+		}
 	}
-
-	if (prev_level > level)
-		result += "\n" + tab + "}";
 
 	return result;
 }
 
-parse::syntax *composition::clone() const
-{
-	return new composition(*this);
+parse::syntax *composition::clone() const {
+	composition *result = new composition();
+	result->level = level;
+	for (auto i = branches.begin(); i != branches.end(); i++) {
+		result->branches.push_back(std::shared_ptr<syntax>((*i)->clone()));
+	}
+	return result;
 }
 
 }
