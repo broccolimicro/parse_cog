@@ -2,15 +2,14 @@
 
 #include <parse/parse.h>
 #include <parse/syntax.h>
-#include <parse/schema.h>
 
 #include "expression.h"
+
+#include <memory>
 
 namespace parse_cog {
 
 struct declaration : parse::syntax {
-	static parse::schema type_name;
-
 	std::shared_ptr<syntax> type;
 	assignment expr;
 

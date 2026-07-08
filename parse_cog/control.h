@@ -9,14 +9,14 @@
 namespace parse_cog {
 
 struct control : parse::syntax {
-	control();
-	control(tokenizer &tokens, void *data = NULL);
-	~control();
-
 	string kind;
 	string region;
 	expression guard;
 	composition action;
+
+	control();
+	control(tokenizer &tokens, void *data = NULL);
+	~control();
 
 	void parse(tokenizer &tokens, void *data = NULL);
 	static bool is_next(tokenizer &tokens, int i = 1, void *data = NULL);

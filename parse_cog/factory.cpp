@@ -16,11 +16,7 @@ void register_syntax(tokenizer &tokens) {
 	composition::register_syntax(tokens);
 }
 
-const parse::factory factory{
-	register_syntax,
-	expect,
-	produce
-};
+const parse::factory factory(register_syntax, expect, produce);
 
 }
 

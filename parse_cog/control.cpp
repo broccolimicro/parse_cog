@@ -8,24 +8,19 @@
 namespace parse_cog
 {
 
-control::control()
-{
+control::control() {
 	debug_name = "cog_control";
 }
 
-control::control(tokenizer &tokens, void *data)
-{
+control::control(tokenizer &tokens, void *data) {
 	debug_name = "cog_control";
 	parse(tokens, data);
 }
 
-control::~control()
-{
-
+control::~control() {
 }
 
-void control::parse(tokenizer &tokens, void *data)
-{
+void control::parse(tokenizer &tokens, void *data) {
 	tokens.syntax_start(this);
 
 	tokens.increment(true);
@@ -35,7 +30,7 @@ void control::parse(tokenizer &tokens, void *data)
 	tokens.expect("assume");
 	tokens.expect("region");
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		kind = tokens.next();
 	}
 
@@ -55,15 +50,16 @@ void control::parse(tokenizer &tokens, void *data)
 		tokens.increment(false);
 		tokens.expect<parse::number>();
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			region = tokens.next();
 		}
 	} else {
 		tokens.increment(false);
 		tokens.expect<expression>();
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			guard.parse(tokens, data);
+		// TODO(edward.bingham) use data for expression precedence
+		if (tokens.decrement(__FILE__, __LINE__, nullptr)) {
+			guard.parse(tokens, nullptr);
 		}
 	}
 
@@ -71,7 +67,7 @@ void control::parse(tokenizer &tokens, void *data)
 		or kind == "await"
 		or kind == "if"
 		or kind == "region") {
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next();
 
 			tokens.increment(true);
@@ -83,7 +79,7 @@ void control::parse(tokenizer &tokens, void *data)
 			tokens.increment(false);
 			tokens.expect<parse::new_line>();
 
-			while (tokens.decrement(__FILE__, __LINE__, data)) {
+			while (tokens.decrement(__FILE__, __LINE__)) {
 				tokens.next();
 
 				tokens.increment(false);
@@ -94,7 +90,7 @@ void control::parse(tokenizer &tokens, void *data)
 				action.parse(tokens, data);
 			}
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
+			if (tokens.decrement(__FILE__, __LINE__)) {
 				tokens.next();
 			}
 		}

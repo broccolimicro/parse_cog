@@ -43,7 +43,7 @@ void composition::parse(tokenizer &tokens, void *data) {
 		tokens.increment(false);
 		tokens.expect<parse::new_line>();
 
-		while (tokens.decrement(__FILE__, __LINE__, data)) {
+		while (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next();
 
 			tokens.increment(false);
@@ -61,13 +61,15 @@ void composition::parse(tokenizer &tokens, void *data) {
 			tokens.expect("skip");
 		}
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		// TODO(edward.bingham) move the decrement data value to the expect
+		// function and store different data pointers for each expected token
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			if (tokens.found<composition>()) {
 				branches.push_back(std::make_shared<composition>(tokens, level+1, data));
 			} else if (tokens.found<control>()) {
 				branches.push_back(std::make_shared<control>(tokens, data));
 			} else if (tokens.found<assignment>()) {
-				branches.push_back(std::make_shared<assignment>(tokens, data));
+				branches.push_back(std::make_shared<assignment>(tokens, nullptr));
 			} else if (tokens.found<declaration>()) {
 				branches.push_back(std::make_shared<declaration>(tokens, data));
 			} else if (tokens.found("skip")) {
@@ -84,7 +86,7 @@ void composition::parse(tokenizer &tokens, void *data) {
 				tokens.increment(false);
 				tokens.expect<parse::new_line>();
 
-				while (tokens.decrement(__FILE__, __LINE__, data)) {
+				while (tokens.decrement(__FILE__, __LINE__)) {
 					tokens.next();
 
 					tokens.increment(false);
@@ -95,7 +97,7 @@ void composition::parse(tokenizer &tokens, void *data) {
 					branches.push_back(std::make_shared<composition>(tokens, 0, data));
 				}
 
-				if (tokens.decrement(__FILE__, __LINE__, data)) {
+				if (tokens.decrement(__FILE__, __LINE__)) {
 					tokens.next();
 				}
 			}
@@ -116,7 +118,7 @@ void composition::parse(tokenizer &tokens, void *data) {
 		} else {
 			break;
 		}
-	} while (tokens.decrement(__FILE__, __LINE__, data));
+	} while (tokens.decrement(__FILE__, __LINE__));
 
 	tokens.syntax_end(this);
 }
@@ -130,7 +132,7 @@ bool composition::is_next(tokenizer &tokens, int i, void *data) {
 		or tokens.is_next("{", i)
 		or declaration::is_next(tokens, i, data)
 		or control::is_next(tokens, i, data)
-		or assignment::is_next(tokens, i, data);
+		or assignment::is_next(tokens, i, nullptr);
 }
 
 void composition::register_syntax(tokenizer &tokens) {

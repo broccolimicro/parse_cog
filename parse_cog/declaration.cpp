@@ -1,4 +1,5 @@
 #include "declaration.h"
+#include "adapter.h"
 
 namespace parse_cog {
 
@@ -15,38 +16,41 @@ declaration::~declaration() {
 }
 
 void declaration::parse(tokenizer &tokens, void *data) {
+	const adapter *cfg = (const adapter*)data;
+
 	tokens.syntax_start(this);
 
 	tokens.increment(true);
 	tokens.expect<assignment>();
 
-	if (not type_name.empty()) {
+	if (cfg != nullptr and not cfg->type_name.empty()) {
 		tokens.increment(true);
-		tokens.expect(type_name.label);
+		tokens.expect(cfg->type_name.label);
 	}
 
 	tokens.increment(true);
 	tokens.expect("var");
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 
 	// type name
-	if (not type_name.empty() and tokens.decrement(__FILE__, __LINE__, data)) {
-		type = type_name.factory(tokens, data);
+	if (cfg != nullptr and not cfg->type_name.empty() and tokens.decrement(__FILE__, __LINE__, cfg->type_name_data)) {
+		type = cfg->type_name.factory(tokens, cfg->type_name_data);
 	}
 
 	// expr
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		expr.parse(tokens, data);
+	// TODO(edward.bingham) use the data here instead of static precedence listings
+	if (tokens.decrement(__FILE__, __LINE__, nullptr)) {
+		expr.parse(tokens, nullptr);
 	}
 
 	tokens.syntax_end(this);
 }
 
 bool declaration::is_next(tokenizer &tokens, int i, void *data) {
-	return tokens.is_next("var");
+	return tokens.is_next("var", i);
 }
 
 void declaration::register_syntax(tokenizer &tokens) {
@@ -56,9 +60,6 @@ void declaration::register_syntax(tokenizer &tokens) {
 		tokens.register_token<parse::instance>();
 		tokens.register_token<parse::white_space>(false);
 		tokens.register_token<parse::new_line>(true);
-		if (not type_name.empty()) {
-			type_name.register_syntax(tokens);
-		}
 		assignment::register_syntax(tokens);
 	}
 }

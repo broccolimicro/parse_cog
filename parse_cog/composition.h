@@ -10,10 +10,6 @@
 namespace parse_cog {
 
 struct composition : parse::syntax {
-	composition();
-	composition(tokenizer &tokens, int level = 0, void *data = NULL);
-	~composition();
-
 	enum {
 		SEQUENCE = 0,
 		INTERNAL_SEQUENCE = 1,
@@ -25,6 +21,10 @@ struct composition : parse::syntax {
 	vector<std::shared_ptr<syntax> > branches;
 	vector<string> comp;
 	int level;
+
+	composition();
+	composition(tokenizer &tokens, int level = 0, void *data = NULL);
+	~composition();
 
 	void parse(tokenizer &tokens, void *data = NULL);
 	static bool is_next(tokenizer &tokens, int i = 1, void *data = NULL);
