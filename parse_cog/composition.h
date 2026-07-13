@@ -23,11 +23,11 @@ struct composition : parse::syntax {
 	int level;
 
 	composition();
-	composition(tokenizer &tokens, int level = 0, void *data = NULL);
+	composition(tokenizer &tokens, int level = 0, std::any data=std::any());
 	~composition();
 
-	void parse(tokenizer &tokens, void *data = NULL);
-	static bool is_next(tokenizer &tokens, int i = 1, void *data = NULL);
+	void parse(tokenizer &tokens, std::any data=std::any());
+	static bool is_next(tokenizer &tokens, int i = 1, std::any data=std::any());
 	static void register_syntax(tokenizer &tokens);
 
 	string to_string(string tab = "") const;

@@ -6,6 +6,7 @@
 #include "expression.h"
 
 #include <memory>
+#include <any>
 
 namespace parse_cog {
 
@@ -14,11 +15,11 @@ struct declaration : parse::syntax {
 	assignment expr;
 
 	declaration();
-	declaration(tokenizer &tokens, void *data=nullptr);
+	declaration(tokenizer &tokens, std::any data={});
 	~declaration();
 	
-	void parse(tokenizer &tokens, void *data=nullptr);
-	static bool is_next(tokenizer &tokens, int i=1, void *data=nullptr);
+	void parse(tokenizer &tokens, std::any data={});
+	static bool is_next(tokenizer &tokens, int i=1, std::any data={});
 	static void register_syntax(tokenizer &tokens);
 
 	string to_string(string tab="") const;

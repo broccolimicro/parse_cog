@@ -7,7 +7,7 @@ declaration::declaration() {
 	debug_name = "cog_declaration";
 }
 
-declaration::declaration(tokenizer &tokens, void *data) {
+declaration::declaration(tokenizer &tokens, std::any data) {
 	debug_name = "cog_declaration";
 	parse(tokens, data);
 }
@@ -15,17 +15,20 @@ declaration::declaration(tokenizer &tokens, void *data) {
 declaration::~declaration() {
 }
 
-void declaration::parse(tokenizer &tokens, void *data) {
-	const adapter *cfg = (const adapter*)data;
+void declaration::parse(tokenizer &tokens, std::any data) {
+	adapter cfg;
+	if (data.has_value()) {
+		cfg = std::any_cast<adapter>(data);
+	}
 
 	tokens.syntax_start(this);
 
 	tokens.increment(true);
 	tokens.expect<assignment>();
 
-	if (cfg != nullptr and not cfg->type_name.empty()) {
+	if (not cfg.type_name.empty()) {
 		tokens.increment(true);
-		tokens.expect(cfg->type_name.label);
+		cfg.type_name.expect(tokens);
 	}
 
 	tokens.increment(true);
@@ -36,20 +39,20 @@ void declaration::parse(tokenizer &tokens, void *data) {
 	}
 
 	// type name
-	if (cfg != nullptr and not cfg->type_name.empty() and tokens.decrement(__FILE__, __LINE__, cfg->type_name_data)) {
-		type = cfg->type_name.factory(tokens, cfg->type_name_data);
+	if (not cfg.type_name.empty() and tokens.decrement(__FILE__, __LINE__)) {
+		type = std::shared_ptr<syntax>(cfg.type_name.produce(tokens));
 	}
 
 	// expr
 	// TODO(edward.bingham) use the data here instead of static precedence listings
-	if (tokens.decrement(__FILE__, __LINE__, nullptr)) {
-		expr.parse(tokens, nullptr);
+	if (tokens.decrement(__FILE__, __LINE__)) {
+		expr.parse(tokens);
 	}
 
 	tokens.syntax_end(this);
 }
 
-bool declaration::is_next(tokenizer &tokens, int i, void *data) {
+bool declaration::is_next(tokenizer &tokens, int i, std::any data) {
 	return tokens.is_next("var", i);
 }
 

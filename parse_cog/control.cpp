@@ -12,7 +12,7 @@ control::control() {
 	debug_name = "cog_control";
 }
 
-control::control(tokenizer &tokens, void *data) {
+control::control(tokenizer &tokens, std::any data) {
 	debug_name = "cog_control";
 	parse(tokens, data);
 }
@@ -20,7 +20,7 @@ control::control(tokenizer &tokens, void *data) {
 control::~control() {
 }
 
-void control::parse(tokenizer &tokens, void *data) {
+void control::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 
 	tokens.increment(true);
@@ -58,8 +58,8 @@ void control::parse(tokenizer &tokens, void *data) {
 		tokens.expect<expression>();
 
 		// TODO(edward.bingham) use data for expression precedence
-		if (tokens.decrement(__FILE__, __LINE__, nullptr)) {
-			guard.parse(tokens, nullptr);
+		if (tokens.decrement(__FILE__, __LINE__)) {
+			guard.parse(tokens);
 		}
 	}
 
@@ -74,7 +74,7 @@ void control::parse(tokenizer &tokens, void *data) {
 			tokens.expect("}");
 
 			tokens.increment(true);
-			tokens.expect<composition>();
+			tokens.expect<composition>(data);
 
 			tokens.increment(false);
 			tokens.expect<parse::new_line>();
@@ -86,7 +86,7 @@ void control::parse(tokenizer &tokens, void *data) {
 				tokens.expect<parse::new_line>();
 			}
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
+			if (tokens.decrement(__FILE__, __LINE__)) {
 				action.parse(tokens, data);
 			}
 
@@ -99,7 +99,7 @@ void control::parse(tokenizer &tokens, void *data) {
 	tokens.syntax_end(this);
 }
 
-bool control::is_next(tokenizer &tokens, int i, void *data) {
+bool control::is_next(tokenizer &tokens, int i, std::any data) {
 	return tokens.is_next("while", i)
 		or tokens.is_next("await", i)
 		or tokens.is_next("if", i)
@@ -109,7 +109,6 @@ bool control::is_next(tokenizer &tokens, int i, void *data) {
 
 void control::register_syntax(tokenizer &tokens) {
 	if (!tokens.syntax_registered<control>()) {
-		setup_expressions();
 		tokens.register_syntax<control>();
 		expression::register_syntax(tokens);
 		composition::register_syntax(tokens);

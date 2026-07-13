@@ -1,12 +1,11 @@
 #pragma once
 
-#include <parse/schema.h>
+#include <parse/factory.h>
 
 namespace parse_cog {
 
 struct adapter {
-	parse::schema type_name;
-	void *type_name_data;
+	parse::factory type_name;
 
 	adapter();
 	~adapter();

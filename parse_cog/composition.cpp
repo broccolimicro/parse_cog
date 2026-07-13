@@ -16,7 +16,7 @@ composition::composition() {
 	level = 0;
 }
 
-composition::composition(tokenizer &tokens, int level, void *data) {
+composition::composition(tokenizer &tokens, int level, std::any data) {
 	debug_name = "cog_composition";
 	this->level = level;
 	parse(tokens, data);
@@ -25,7 +25,7 @@ composition::composition(tokenizer &tokens, int level, void *data) {
 composition::~composition() {
 }
 
-void composition::parse(tokenizer &tokens, void *data) {
+void composition::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 
 	bool first = true;
@@ -81,7 +81,7 @@ void composition::parse(tokenizer &tokens, void *data) {
 				tokens.expect("}");
 
 				tokens.increment(true);
-				tokens.expect<composition>();
+				tokens.expect<composition>(data);
 
 				tokens.increment(false);
 				tokens.expect<parse::new_line>();
@@ -93,7 +93,7 @@ void composition::parse(tokenizer &tokens, void *data) {
 					tokens.expect<parse::new_line>();
 				}
 
-				if (tokens.decrement(__FILE__, __LINE__, data)) {
+				if (tokens.decrement(__FILE__, __LINE__)) {
 					branches.push_back(std::make_shared<composition>(tokens, 0, data));
 				}
 
@@ -123,7 +123,7 @@ void composition::parse(tokenizer &tokens, void *data) {
 	tokens.syntax_end(this);
 }
 
-bool composition::is_next(tokenizer &tokens, int i, void *data) {
+bool composition::is_next(tokenizer &tokens, int i, std::any data) {
 	while (tokens.is_next<parse::new_line>(i)) {
 		i++;
 	}
@@ -137,7 +137,6 @@ bool composition::is_next(tokenizer &tokens, int i, void *data) {
 
 void composition::register_syntax(tokenizer &tokens) {
 	if (!tokens.syntax_registered<composition>()) {
-		setup_expressions();
 		tokens.register_syntax<composition>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::white_space>(false);
