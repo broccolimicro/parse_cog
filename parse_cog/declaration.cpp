@@ -68,7 +68,12 @@ void declaration::register_syntax(tokenizer &tokens) {
 }
 
 string declaration::to_string(string tab) const {
-	return "var " + type->to_string(tab) + " " + expr.to_string(tab);
+	string result = "var ";
+	if (type != nullptr) {
+		result += type->to_string(tab) + " ";
+	}
+	result += expr.to_string(tab);
+	return result;
 }
 
 parse::syntax *declaration::clone() const {

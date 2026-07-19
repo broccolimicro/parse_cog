@@ -57,7 +57,6 @@ void control::parse(tokenizer &tokens, std::any data) {
 		tokens.increment(false);
 		tokens.expect<expression>();
 
-		// TODO(edward.bingham) use data for expression precedence
 		if (tokens.decrement(__FILE__, __LINE__)) {
 			guard.parse(tokens);
 		}
@@ -119,10 +118,11 @@ void control::register_syntax(tokenizer &tokens) {
 }
 
 string control::to_string(string tab) const {
-	if (!valid)
-		return tab+"skip";
+	if (!valid) {
+		return "skip";
+	}
 
-	string result = tab+kind;
+	string result = kind;
 	if (guard.valid) {
 		result += " " + guard.to_string(tab);
 	} else if (region != "") {
@@ -130,7 +130,7 @@ string control::to_string(string tab) const {
 	}
 
 	if (action.valid) {
-		result += " {\n" + action.to_string(tab+"\t") + "\n" + tab + "}";
+		result += " {\n" + tab+"\t" + action.to_string(tab+"\t") + "\n" + tab + "}";
 	}
 
 	return result;

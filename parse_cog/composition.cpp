@@ -69,7 +69,7 @@ void composition::parse(tokenizer &tokens, std::any data) {
 			} else if (tokens.found<control>()) {
 				branches.push_back(std::make_shared<control>(tokens, data));
 			} else if (tokens.found<assignment>()) {
-				branches.push_back(std::make_shared<assignment>(tokens, nullptr));
+				branches.push_back(std::make_shared<assignment>(tokens));
 			} else if (tokens.found<declaration>()) {
 				branches.push_back(std::make_shared<declaration>(tokens, data));
 			} else if (tokens.found("skip")) {
@@ -132,7 +132,7 @@ bool composition::is_next(tokenizer &tokens, int i, std::any data) {
 		or tokens.is_next("{", i)
 		or declaration::is_next(tokens, i, data)
 		or control::is_next(tokens, i, data)
-		or assignment::is_next(tokens, i, nullptr);
+		or assignment::is_next(tokens, i);
 }
 
 void composition::register_syntax(tokenizer &tokens) {
@@ -148,19 +148,30 @@ void composition::register_syntax(tokenizer &tokens) {
 }
 
 string composition::to_string(string tab) const {
-	if (!valid || branches.empty())
-		return tab+"skip";
+	if (not valid or branches.empty()) {
+		return "skip";
+	}
 
 	string result = "";
 	size_t j = 0;
 	for (auto i = branches.begin(); i != branches.end(); i++) {
-		if (i != branches.begin()) {
-			result += comp[j];
+		if ((*i) == nullptr) {
+			continue;
+		}
+
+		if (not result.empty() and j < comp.size()) {
+			if (comp[j] == "and" or comp[j] == "or" or comp[j] == "xor") {
+				result += " " + comp[j] + " ";
+			} else if (comp[j] == ";") {
+				result += "; ";
+			} else {
+				result += "\n" + tab;
+			}
 			++j;
 		}
 
 		if ((*i)->is_a<composition>() and (*i)->get<composition>().level < level) {
-			result += tab + "{\n" + (*i)->to_string(tab+"\t") + "\n" + tab + "}";
+			result += "{\n" + tab+"\t" + (*i)->to_string(tab+"\t") + "\n" + tab + "}";
 		} else {
 			result += (*i)->to_string(tab);
 		}
