@@ -37,8 +37,9 @@ parse_expression::config makeExprConfig() {
 
 	using operation_set=parse_expression::operation_set;
 
-	cfg.order.push(operation_set::TERNARY);
-	cfg.order.push_back("", "?", ":", "");
+	// TODO(edward.bingham) we don't have arithmetic support for conditionals inside expressions
+	/*cfg.order.push(operation_set::TERNARY);
+	cfg.order.push_back("", "?", ":", "");*/
 
 	cfg.order.push(operation_set::BINARY);
 	cfg.order.push_back("", "", "|", "");
@@ -86,6 +87,8 @@ parse_expression::config makeExprConfig() {
 	cfg.order.push_back("-", "", "", "");
 	cfg.order.push_back("?", "", "", "");
 
+	cfg.set_lvalue();
+
 	cfg.order.push(operation_set::MODIFIER);
 	cfg.order.push_back("", "'", "", "", {LITERAL}, {LABEL});
 
@@ -95,13 +98,12 @@ parse_expression::config makeExprConfig() {
 	cfg.order.push_back("", ".", "", "", {LITERAL}, {LABEL});
 	cfg.order.push_back("", "[", ":", "]");
 
-	cfg.order.push(operation_set::MODIFIER);
-	cfg.order.push_back("", "::", "", "", {TYPE}, {LABEL});
+	// TODO(edward.bingham) subtyping needs a type system
+	/*cfg.order.push(operation_set::MODIFIER);
+	cfg.order.push_back("", "::", "", "", {TYPE}, {LABEL});*/
 
 	cfg.order.push(operation_set::GROUP);
 	cfg.order.push_back("[", "", ",", "]");
-
-	cfg.lvalueLevel = cfg.order.size()-4;
 
 	return cfg;
 }
@@ -122,7 +124,7 @@ parse_expression::config makeCompConfig() {
 	cfg.order.push(operation_set::BINARY);
 	cfg.order.push_back("", "", ",", "");
 
-	cfg.lvalueLevel = 2;
+	cfg.set_lvalue();
 
 	return cfg;
 }
