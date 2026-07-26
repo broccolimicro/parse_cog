@@ -27,11 +27,11 @@ composition_config::~composition_config() {
 
 parse_expression::config makeExprConfig() {
 	parse_expression::config cfg;
-	int CONSTANT = cfg.push<parse_expression::default_constant>();
-	int LITERAL = cfg.push<parse_expression::default_literal>();
-	int TYPE = cfg.push<parse::wrapper<parse::instance> >();
-	int TERM = cfg.push<parse::wrapper<parse::instance> >();
-	int LABEL = cfg.push<parse::wrapper<parse::number> >();
+	int CONSTANT = cfg.push<parse_expression::default_constant>("constant");
+	int LITERAL = cfg.push<parse_expression::default_literal>("literal");
+	int TYPE = cfg.push<parse::wrapper<parse::instance> >("type");
+	int TERM = cfg.push<parse::wrapper<parse::instance> >("term");
+	int LABEL = cfg.push<parse::wrapper<parse::number> >("label");
 
 	cfg.base = {LITERAL, CONSTANT};
 
@@ -109,8 +109,8 @@ parse_expression::config makeExprConfig() {
 parse_expression::config makeCompConfig() {
 	parse_expression::config cfg;
 
-	int GUARD = cfg.push<guard>();
-	int ASSIGN = cfg.push<assignment>();
+	int GUARD = cfg.push<guard>("guard");
+	int ASSIGN = cfg.push<assignment>("assign");
 
 	cfg.base = {GUARD, ASSIGN};
 
