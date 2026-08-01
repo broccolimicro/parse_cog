@@ -59,7 +59,7 @@ parse_expression::config makeExprConfig() {
 
 	cfg.order.push(operation_set::BINARY);
 	cfg.order.push_back("", "", "==", "");
-	cfg.order.push_back("", "", "~=", "");
+	cfg.order.push_back("", "", "!=", "");
 	cfg.order.push_back("", "", "<", "");
 	cfg.order.push_back("", "", ">", "");
 	cfg.order.push_back("", "", "<=", "");

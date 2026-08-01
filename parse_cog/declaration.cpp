@@ -16,9 +16,9 @@ declaration::~declaration() {
 }
 
 void declaration::parse(tokenizer &tokens, std::any data) {
-	adapter cfg;
+	const adapter *cfg = nullptr;
 	if (data.has_value()) {
-		cfg = std::any_cast<adapter>(data);
+		cfg = std::any_cast<const adapter*>(data);
 	}
 
 	tokens.syntax_start(this);
@@ -26,9 +26,9 @@ void declaration::parse(tokenizer &tokens, std::any data) {
 	tokens.increment(true);
 	tokens.expect<assignment>();
 
-	if (not cfg.type_name.empty()) {
+	if (cfg != nullptr and not cfg->type_name.empty()) {
 		tokens.increment(true);
-		cfg.type_name.expect(tokens);
+		cfg->type_name.expect(tokens);
 	}
 
 	tokens.increment(true);
@@ -39,8 +39,8 @@ void declaration::parse(tokenizer &tokens, std::any data) {
 	}
 
 	// type name
-	if (not cfg.type_name.empty() and tokens.decrement(__FILE__, __LINE__)) {
-		type = std::shared_ptr<syntax>(cfg.type_name.produce(tokens));
+	if (cfg != nullptr and not cfg->type_name.empty() and tokens.decrement(__FILE__, __LINE__)) {
+		type = std::shared_ptr<syntax>(cfg->type_name.produce(tokens));
 	}
 
 	// expr
