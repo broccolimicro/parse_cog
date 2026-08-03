@@ -27,9 +27,8 @@ parse_expression::config makeExprConfig() {
 	parse_expression::config cfg;
 	int CONSTANT = cfg.push<constant>("constant");
 	int LITERAL = cfg.push<literal>("literal");
-	/*int TYPE = */cfg.push<type_name>("type");
-	int TERM = cfg.push<term_name>("term");
 	int LABEL = cfg.push<label>("label");
+	int IDENT = cfg.push<ident>("ident");
 
 	cfg.base = {LITERAL, CONSTANT};
 
@@ -88,17 +87,17 @@ parse_expression::config makeExprConfig() {
 	cfg.set_lvalue();
 
 	cfg.order.push(operation_set::MODIFIER);
-	cfg.order.push_back("", "'", "", "", {LITERAL}, {LABEL});
+	cfg.order.push_back("", "'", "", "", {IDENT});
 
 	cfg.order.push(operation_set::MODIFIER);
 	//cfg.order.push_back("", "{", ",", "}");
-	cfg.order.push_back("", "(", ",", ")", {TERM});
-	cfg.order.push_back("", ".", "", "", {LITERAL}, {LITERAL});
+	cfg.order.push_back("", "(", ",", ")");
+	cfg.order.push_back("", ".", "", "", {LABEL});
 	cfg.order.push_back("", "[", ":", "]");
 
 	// TODO(edward.bingham) subtyping needs a type system
 	/*cfg.order.push(operation_set::MODIFIER);
-	cfg.order.push_back("", "::", "", "", {TYPE}, {LABEL});*/
+	cfg.order.push_back("", "::", "", "", {LABEL});*/
 
 	cfg.order.push(operation_set::GROUP);
 	cfg.order.push_back("[", "", ",", "]");
