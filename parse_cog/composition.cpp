@@ -182,7 +182,9 @@ string composition::to_string(string tab) const {
 
 parse::syntax *composition::clone() const {
 	composition *result = new composition();
+	result->valid = true;
 	result->level = level;
+	result->comp = comp;
 	for (auto i = branches.begin(); i != branches.end(); i++) {
 		result->branches.push_back(std::shared_ptr<syntax>((*i)->clone()));
 	}
