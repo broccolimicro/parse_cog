@@ -77,6 +77,9 @@ parse_expression::config makeExprConfig() {
 	cfg.order.push_back("", "", "/", "");
 	cfg.order.push_back("", "", "%", "");
 
+	cfg.order.push(operation_set::MODIFIER);
+	cfg.order.push_back("(", ")", "", "");
+
 	cfg.order.push(operation_set::UNARY);
 	cfg.order.push_back("!", "", "", "");
 	cfg.order.push_back("~", "", "", "");
