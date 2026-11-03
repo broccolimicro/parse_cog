@@ -48,7 +48,7 @@ const T *unwrap(const parse::syntax *s) {
 
 TEST(CogParser, BasicWhileLoop) {
 	string cog_code = R"(
-while {
+until {
 	L.recv()
 }
 )";
@@ -58,7 +58,7 @@ while {
 
 	const control *ctrl = unwrap<control>(&dut);
 	ASSERT_NE(ctrl, nullptr);
-	EXPECT_EQ(ctrl->kind, "while");
+	EXPECT_EQ(ctrl->kind, "until");
 	EXPECT_TRUE(ctrl->action.valid);
 	EXPECT_EQ(ctrl->action.branches.size(), 1u);
 
@@ -70,7 +70,7 @@ while {
 
 TEST(CogParser, Source) {
 	string cog_code = R"(
-while {
+until {
 	L.send(rand())
 }
 )";
@@ -80,7 +80,7 @@ while {
 
 	const control *ctrl = unwrap<control>(&dut);
 	ASSERT_NE(ctrl, nullptr);
-	EXPECT_EQ(ctrl->kind, "while");
+	EXPECT_EQ(ctrl->kind, "until");
 	EXPECT_TRUE(ctrl->action.valid);
 	EXPECT_EQ(ctrl->action.branches.size(), 1u);
 
@@ -92,7 +92,7 @@ while {
 
 TEST(CogParser, Buffer) {
 	string cog_code = R"(
-while {
+until {
 	R.send(L.recv())
 }
 )";
@@ -102,7 +102,7 @@ while {
 
 	const control *ctrl = unwrap<control>(&dut);
 	ASSERT_NE(ctrl, nullptr);
-	EXPECT_EQ(ctrl->kind, "while");
+	EXPECT_EQ(ctrl->kind, "until");
 	EXPECT_TRUE(ctrl->action.valid);
 	EXPECT_EQ(ctrl->action.branches.size(), 1u);
 
@@ -114,7 +114,7 @@ while {
 
 TEST(CogParser, Copy) {
 	string cog_code = R"(
-while {
+until {
 	var l = L.recv()
 	R0.send(l) and R1.send(l)
 }
@@ -125,7 +125,7 @@ while {
 
 	const control *ctrl = unwrap<control>(&dut);
 	ASSERT_NE(ctrl, nullptr);
-	EXPECT_EQ(ctrl->kind, "while");
+	EXPECT_EQ(ctrl->kind, "until");
 	EXPECT_TRUE(ctrl->action.valid);
 
 	const composition *seq = unwrap<composition>(&ctrl->action);
@@ -144,7 +144,7 @@ while {
 
 TEST(CogParser, Split) {
 	string cog_code = R"(
-while {
+until {
 	if Cc.probe() == 0 {
 		R0.send(L.recv()) and Cc.recv()
 	} or if Cc.probe() == 1 {
@@ -158,7 +158,7 @@ while {
 
 	const control *ctrl = unwrap<control>(&dut);
 	ASSERT_NE(ctrl, nullptr);
-	EXPECT_EQ(ctrl->kind, "while");
+	EXPECT_EQ(ctrl->kind, "until");
 	EXPECT_TRUE(ctrl->action.valid);
 	EXPECT_EQ(ctrl->action.branches.size(), 1u);
 
@@ -186,7 +186,7 @@ while {
 
 TEST(CogParser, Merge) {
 	string cog_code = R"(
-while {
+until {
 	if Cc.probe() == 0 {
 		R.send(L0.recv()) and Cc.recv()
 	} or if Cc.probe() == 1 {
@@ -200,7 +200,7 @@ while {
 
 	const control *ctrl = unwrap<control>(&dut);
 	ASSERT_NE(ctrl, nullptr);
-	EXPECT_EQ(ctrl->kind, "while");
+	EXPECT_EQ(ctrl->kind, "until");
 	EXPECT_TRUE(ctrl->action.valid);
 	EXPECT_EQ(ctrl->action.branches.size(), 1u);
 
@@ -228,7 +228,7 @@ while {
 
 TEST(CogParser, Add) {
 	string cog_code = R"(
-while {
+until {
 	S.send(A.recv() + B.recv())
 }
 )";
@@ -238,7 +238,7 @@ while {
 
 	const control *ctrl = unwrap<control>(&dut);
 	ASSERT_NE(ctrl, nullptr);
-	EXPECT_EQ(ctrl->kind, "while");
+	EXPECT_EQ(ctrl->kind, "until");
 	EXPECT_TRUE(ctrl->action.valid);
 
 	const assignment *assign = unwrap<assignment>(ctrl->action.branches[0].get());
@@ -342,21 +342,21 @@ TEST(CogParser, ParseAndRegenerate) {
 	vector<string> test_cases = {
 		R"(skip)",
 
-		R"(while {
+		R"(until {
 	L.recv()
 })",
 
-		R"(while {
+		R"(until {
 	R.send(L.recv())
 })",
 
-		R"(while {
+		R"(until {
 	var l
 	l=L.recv()
 	R0.send(l) and R1.send(l)
 })",
 
-		R"(while {
+		R"(until {
 	if Cc.probe()==0 {
 		R0.send(L.recv()) and Cc.recv()
 	} or if Cc.probe()==1 {
@@ -364,7 +364,7 @@ TEST(CogParser, ParseAndRegenerate) {
 	}
 })",
 
-		R"(while {
+		R"(until {
 	S.send(A.recv()+B.recv())
 })",
 	};

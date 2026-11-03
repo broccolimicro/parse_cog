@@ -24,7 +24,10 @@ void control::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 
 	tokens.increment(true);
+	tokens.expect("when");
 	tokens.expect("while");
+	tokens.expect("until");
+	tokens.expect("unless");
 	tokens.expect("await");
 	tokens.expect("if");
 	tokens.expect("assume");
@@ -34,7 +37,10 @@ void control::parse(tokenizer &tokens, std::any data) {
 		kind = tokens.next();
 	}
 
-	if (kind == "while"
+	if (kind == "until"
+		or kind == "unless"
+		or kind == "when"
+		or kind == "while"
 		or kind == "region") {
 		tokens.increment(true);
 		tokens.expect("{");
@@ -62,7 +68,10 @@ void control::parse(tokenizer &tokens, std::any data) {
 		}
 	}
 
-	if (kind == "while"
+	if (kind == "until"
+		or kind == "unless"
+		or kind == "when"
+		or kind == "while"
 		or kind == "await"
 		or kind == "if"
 		or kind == "region") {
@@ -99,7 +108,10 @@ void control::parse(tokenizer &tokens, std::any data) {
 }
 
 bool control::is_next(tokenizer &tokens, int i, std::any data) {
-	return tokens.is_next("while", i)
+	return tokens.is_next("until", i)
+		or tokens.is_next("unless", i)
+		or tokens.is_next("when", i)
+		or tokens.is_next("while", i)
 		or tokens.is_next("await", i)
 		or tokens.is_next("if", i)
 		or tokens.is_next("assume", i)

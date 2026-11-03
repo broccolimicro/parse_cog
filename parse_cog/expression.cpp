@@ -77,9 +77,6 @@ parse_expression::config makeExprConfig() {
 	cfg.order.push_back("", "", "/", "");
 	cfg.order.push_back("", "", "%", "");
 
-	cfg.order.push(operation_set::MODIFIER);
-	cfg.order.push_back("(", ")", "", "");
-
 	cfg.order.push(operation_set::UNARY);
 	cfg.order.push_back("!", "", "", "");
 	cfg.order.push_back("~", "", "", "");
@@ -94,6 +91,7 @@ parse_expression::config makeExprConfig() {
 
 	cfg.order.push(operation_set::MODIFIER);
 	//cfg.order.push_back("", "{", ",", "}");
+	// Typecast is a constructor function
 	cfg.order.push_back("", "(", ",", ")");
 	cfg.order.push_back("", ".", "", "", {LABEL});
 	cfg.order.push_back("", "[", ":", "]");
