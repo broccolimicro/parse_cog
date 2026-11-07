@@ -28,6 +28,8 @@ void control::parse(tokenizer &tokens, std::any data) {
 	tokens.expect("while");
 	tokens.expect("until");
 	tokens.expect("unless");
+	tokens.expect("xuntil");
+	tokens.expect("xunless");
 	tokens.expect("await");
 	tokens.expect("if");
 	tokens.expect("assume");
@@ -39,6 +41,8 @@ void control::parse(tokenizer &tokens, std::any data) {
 
 	if (kind == "until"
 		or kind == "unless"
+		or kind == "xuntil"
+		or kind == "xunless"
 		or kind == "when"
 		or kind == "while"
 		or kind == "region") {
@@ -70,6 +74,8 @@ void control::parse(tokenizer &tokens, std::any data) {
 
 	if (kind == "until"
 		or kind == "unless"
+		or kind == "xuntil"
+		or kind == "xunless"
 		or kind == "when"
 		or kind == "while"
 		or kind == "await"
@@ -110,6 +116,8 @@ void control::parse(tokenizer &tokens, std::any data) {
 bool control::is_next(tokenizer &tokens, int i, std::any data) {
 	return tokens.is_next("until", i)
 		or tokens.is_next("unless", i)
+		or tokens.is_next("xuntil", i)
+		or tokens.is_next("xunless", i)
 		or tokens.is_next("when", i)
 		or tokens.is_next("while", i)
 		or tokens.is_next("await", i)
